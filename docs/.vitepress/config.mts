@@ -21,6 +21,7 @@ export default withMermaid(
       sidebar: [
         {
           text: '智能体',
+          collapsed: true,
           items: [
             { text: '智能体笔记', link: '/posts/agent-harness' },
             { text: 'RSI 笔记', link: '/posts/rsi' },
