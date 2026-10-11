@@ -19,7 +19,13 @@ export default withMermaid(
         },
         {
           text: '后端',
-          items: [{ text: 'Go笔记', link: '/posts/go' }],
+          items: [
+            { text: 'Go笔记', link: '/posts/go' },
+            { text: '存储笔记', link: '/posts/storage' },
+            { text: '系统设计笔记', link: '/posts/sysdesign' },
+            { text: 'Java/Python笔记', link: '/posts/java-python' },
+            { text: '基础笔记', link: '/posts/basics' },
+          ],
         },
       ],
       sidebar: [
@@ -35,7 +41,13 @@ export default withMermaid(
         {
           text: '后端',
           collapsed: true,
-          items: [{ text: 'Go笔记', link: '/posts/go' }],
+          items: [
+            { text: 'Go笔记', link: '/posts/go' },
+            { text: '存储笔记', link: '/posts/storage' },
+            { text: '系统设计笔记', link: '/posts/sysdesign' },
+            { text: 'Java/Python笔记', link: '/posts/java-python' },
+            { text: '基础笔记', link: '/posts/basics' },
+          ],
         },
       ],
       socialLinks: [{ icon: 'github', link: 'https://github.com/gshkuang' }],
