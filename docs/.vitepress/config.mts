@@ -19,11 +19,8 @@ export default withMermaid(
           items: [
             { text: '智能体笔记', link: '/posts/agent-harness' },
             { text: 'RSI 笔记', link: '/posts/rsi' },
+            { text: 'Agent手册', link: '/posts/agent-manual' },
           ],
-        },
-        {
-          text: '面试',
-          items: [{ text: 'Agent手册', link: '/posts/agent-manual' }],
         },
       ],
       socialLinks: [{ icon: 'github', link: 'https://github.com/gshkuang' }],
