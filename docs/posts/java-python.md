@@ -69,6 +69,40 @@ flowchart LR
 - **SPI：** Java `ServiceLoader`（`META-INF/services`）；Spring 老 `spring.factories`、新自动装配 imports。
 - **MVC 流程：** DispatcherServlet → HandlerMapping → HandlerAdapter → Controller → ViewResolver 渲染。异常 `@ControllerAdvice` 统一收口；多实现注入用 `@Qualifier/@Primary` 或 List 注入自选。
 
+### 依赖注入三种方式（常问）
+
+- 构造器注入（优先）：依赖显式、不可变、易测试，循环依赖直接暴露。
+- Setter 注入：可选依赖、可重配。
+- 字段注入：写着省事，难测试、难发现缺失依赖，生产代码慎用。
+
+### Bean 生命周期（常问）
+
+```mermaid
+flowchart LR
+    I["实例化"] --> P["属性填充"]
+    P --> A["Aware 回调"]
+    A --> B1["BPP 前置处理"]
+    B1 --> IN["初始化"]
+    IN --> B2["BPP 后置处理"]
+    B2 --> R["就绪使用"]
+    R --> D["销毁"]
+```
+
+- 全链：实例化 → 属性填充 → Aware（BeanName/ApplicationContext）→ BeanPostProcessor 前 → 初始化（`@PostConstruct`/InitializingBean/自定义 init）→ BPP 后（AOP 代理在此织入）→ 就绪 → 销毁（`@PreDestroy`/DisposableBean）。
+- 口述要点：循环依赖的三级缓存在"属性填充"阶段抛半成品；AOP 代理在 BPP 后置阶段生成。
+
+### MyBatis（常问）
+
+- **Mapper 原理：** 接口无实现，靠 JDK 动态代理生成实现，方法名/注解映射 SQL。
+- **一级缓存：** SqlSession 级，同一会话同查询命中；二级缓存：Mapper 级（跨会话），需序列化，写多读少才开。
+- **`#` vs `$`：** `#` 预编译参数化（防注入），`$` 字符串拼接（只用于表名/列名等动态结构）。
+- **延迟加载：** 关联对象按需查，防 N+1，但会话关闭后懒加载失效。
+
+### Boot 自动装配
+
+- `AutoConfiguration.imports` 列候选配置类 + `@ConditionalOnClass/MissingBean/Property` 按需生效；用户自定义 Bean 优先（`OnMissingBean` 让路）。
+- 启动链：`@SpringBootApplication` = 配置 + 扫描（同包及子包）+ 自动装配三合一。
+
 ## 5. Python 基础：语法、内存与习惯
 
 **一句话：动态类型的代价是运行时语义——可变性、引用传递、GIL 三件事决定代码怎么写。**
@@ -77,7 +111,8 @@ flowchart LR
 - **传参：** 传对象引用——可变对象就地改影响外部，重绑形参不影响。`is` 比身份，`==` 比值。
 - **方法三件：** 实例方法（self）、类方法（cls，工厂）、静态方法（组织代码）；`@property` 转属性；`functools.wraps` 保元信息。
 - **生成器与闭包：** `yield` 暂停保状态（大文件/管道/分页）；闭包捕获自由变量；`with` 管资源（`__enter__/__exit__`）。
-- **内存管理（常问）：** 引用计数为主（零即回收，怕环）+ gc 分代收环 + pymalloc 小对象池。泄漏排查：`with/close` 管资源、缓存加 LRU/TTL 上限、环上不用 `__del__`（或 weakref）、`tracemalloc` + `gc` 定位、区分 Python 堆与 native 内存。
+- **内存管理（常问）：** 引用计数为主（零即回收，怕环）+ gc 分代收环 + pymalloc 小对象池。**分代细则：** 0/1/2 三代，新对象进 0 代；阈值（默认 700/10/10）触发时回收对应代并晋升幸存者；环上 `__del__` 的对象进 `gc.garbage` 待人工断环。泄漏排查：`with/close` 管资源、缓存加 LRU/TTL 上限、环上不用 `__del__`（或 weakref）、`tracemalloc` + `gc` 定位、区分 Python 堆与 native 内存。
+- **内存模型：** 小对象走 pymalloc（arena → pool → block，减碎片、快分配）；大对象直接 `mmap`；小整数与短字符串有驻留（别依赖它写逻辑）。
 - **GIL（常问）：** 同一时刻一线程跑字节码；CPU 密集多线程不并行，IO 密集可提吞吐。解法：多进程、释 GIL 的 C 扩展/NumPy；3.13 无 GIL 构建在路上。
 - **测试与性能：** `unittest.mock.patch` 打桩；cProfile/line_profiler/memory_profiler 三件；列表推导、生成器、局部变量是常规优化。
 
@@ -96,6 +131,10 @@ flowchart LR
 - **竞争与死锁：** 共享可变是根因；锁/队列/少共享/幂等；统一加锁顺序、短持锁、超时、防嵌套。
 - **FastAPI 链路（常问）：** Uvicorn（ASGI）→ 路由 → Depends 注入（鉴权/DB session/分页限流）→ Pydantic 校验 → endpoint → 序列化。ASGI 原生 async + WebSocket，区别于 WSGI 同步模型。
 - **鉴权与中间件：** JWT（过期 + 签名，`Authorization: Bearer`，依赖里验签）+ 中间件（跨域/日志/trace/异常兜底，忌阻塞调用）。后台任务轻量 `BackgroundTasks`，重活走 Celery/RQ/APScheduler。
+- **中间件模型（常问）：** 两层——纯 ASGI 中间件（包请求全链路，开销小）vs `BaseHTTPMiddleware`（写法简单但多一次体拷贝，高吞吐慎用）；Depends 是另一维度的注入（按请求作用域组装鉴权/session/配置），与中间件正交。
+- **lifespan：** 新版用 `lifespan` 上下文替代 `on_event`，管启动（建池、预热）与关闭（放连接、刷缓冲）。
+- **asyncio 深化：** 事件循环 + selectors 监听 IO；`await` 让出、`create_task` 并发；取消用 `task.cancel` + `CancelledError` 收尾；CPU 段塞进 `run_in_executor` 线程池，别堵 loop。
+- **ORM：** Django ORM（QuerySet 惰性，不求值不发 SQL）/ SQLAlchemy（session 工作单元，flush 才落库）；N+1 用 `select_related/prefetch`、批量用 bulk 接口。
 - **框架地图：** FastAPI（Starlette + Pydantic，异步 API）、Django（全功能 MTV）、Flask（轻量）；NumPy/Pandas/Sklearn 管数据科学。
 
 ## 7. 双栈对照表
