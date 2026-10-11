@@ -9,9 +9,14 @@ export default withMermaid(
     themeConfig: {
       nav: [
         { text: '首页', link: '/' },
-        { text: '智能体笔记', link: '/posts/agent-harness' },
-        { text: 'RSI 笔记', link: '/posts/rsi' },
-        { text: 'Agent手册', link: '/posts/agent-manual' },
+        {
+          text: '智能体',
+          items: [
+            { text: '智能体笔记', link: '/posts/agent-harness' },
+            { text: 'RSI 笔记', link: '/posts/rsi' },
+            { text: 'Agent手册', link: '/posts/agent-manual' },
+          ],
+        },
       ],
       sidebar: [
         {

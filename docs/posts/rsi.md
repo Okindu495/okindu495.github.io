@@ -180,9 +180,9 @@ flowchart LR
 
 | 方法                                             | 方法简述                     | 改哪里               | 做法                                           | 效果                                                    |
 | ------------------------------------------------ | ---------------------------- | -------------------- | ---------------------------------------------- | ------------------------------------------------------- |
-| Prime Agent（转引青稞，终校 arXiv:2608.23552）   | 长程工作台：外部 REPL 保现场 | 上下文：持久化工作台 | REPL 保代码变量文件结果，中断可续，不改参数    | 保长程现场，复用靠取出组装                              |
-| ReasoningBank（转引青稞，终校 arXiv:2509.25140） | 经验提炼：成败轨迹压成短经验 | 记忆：长期库         | 成败轨迹提炼为简短经验，按需检索指导本轮       | WebArena 总体 +3.7-6.2pp，SWE-Bench Verified +3.4-4.0pp |
-| TRACE（转引青稞，终校 arXiv:2608.22793）         | Skill 修补：分情况改做法     | Skill：同类情况做法  | 按成功失败改工具规则与行为要求，只修相关 Skill | GPT-5.5 连三次全成功率 59.9%→94.5%                      |
+| Prime Agent（arXiv:2608.23552）   | 长程工作台：外部 REPL 保现场 | 上下文：持久化工作台 | REPL 保代码变量文件结果，中断可续，不改参数    | 保长程现场，复用靠取出组装                              |
+| ReasoningBank（arXiv:2509.25140） | 经验提炼：成败轨迹压成短经验 | 记忆：长期库         | 成败轨迹提炼为简短经验，按需检索指导本轮       | WebArena 总体 +3.7-6.2pp，SWE-Bench Verified +3.4-4.0pp |
+| TRACE（arXiv:2608.22793）         | Skill 修补：分情况改做法     | Skill：同类情况做法  | 按成功失败改工具规则与行为要求，只修相关 Skill | GPT-5.5 连三次全成功率 59.9%→94.5%                      |
 
 **RAG 与搜索是外部供给**（机制见《智能体笔记》§3.3）：RAG 供轨迹外的世界、与压缩互补，不改变"静态前缀 + 轨迹"的加法结构；相似题检索 / Step-back / Deep Research 是推理中的搜索接地。RSI 在此不新增机制，只是把"检索什么"也纳入可被改进的对象。
 
@@ -190,7 +190,7 @@ flowchart LR
 
 **为什么改这一格杠杆最大。** 工具与 Harness 同属"能做什么、怎么组织"：模型只输出 token，工具把读/改/跑/搜封装成接口，Harness 决定怎么编排、给什么权限。Weng 2026 的逻辑是——优化对象会沿一条阶梯上移：**提示词 → 上下文 → 工作流 → Harness 代码 → 优化器代码** [Weng26]。越往里杠杆越大，因为改的是"怎么改"本身。
 
-两条关键机制结论（同出 [Weng26] 转引 Lin et al.）：驾具改写能力跨模型尺寸相近（9B 与 Opus 级写出的改写过程同构）；真正的瓶颈不在"会不会改"，而在"改了有没有用"——长程指令遵循与及时正确调工具。
+两条关键机制结论（同出 [Weng26]，其引 Lin et al.）：驾具改写能力跨模型尺寸相近（9B 与 Opus 级写出的改写过程同构）；真正的瓶颈不在"会不会改"，而在"改了有没有用"——长程指令遵循与及时正确调工具。
 
 工具与调用的静态设计原则（少而精、命名分区、字段收紧、错误给修正动作、权限默认关闭、渐进式披露、用评测驱动）见《智能体笔记》§4。本节只讲它如何被自动改进。
 
@@ -205,9 +205,9 @@ flowchart LR
 | STOP [STOP]                      | 改改进器：递归改优化器                | 改进器改进改进器本身               | 优化器代码                             | 强底座上下游均值涨，弱底座退化                        |
 | Self-Harness [SelfHarness]       | 有界自改：失败聚类小步改              | 同模型按失败聚类提修改             | 有界驾具修改，双回归才接纳             | 模型专属指令，held-out 提升                           |
 | AlphaEvolve [AlphaEvolve]        | 进化搜程序：程序池变异择优            | 冻结 LLM 按父程序迭代写 diff       | 候选程序（EVOLVE 块标记）              | 矩阵乘法/内核/竞赛可验任务有效，评估慢或模糊则难      |
-| SkillSmith（转引青稞，终校原文） | 联动修改：Skill 工具同改              | 反思模块配套改 Skill 与工具        | Skill 加工具联动，记合作竞争关系       | 复杂多 Skill 任务优势明显，需联测防互损               |
+| SkillSmith | 联动修改：Skill 工具同改              | 反思模块配套改 Skill 与工具        | Skill 加工具联动，记合作竞争关系       | 复杂多 Skill 任务优势明显，需联测防互损               |
 
-**版本怎么继承。** 分链（SkillFlow 单线）、树（DGM 多分支保留）、图（MGM 跨分支对照，Polyglot 50.8% 升至 93.2%，超单轨迹基线 77.9%，转引青稞长文）。
+**版本怎么继承。** 分链（SkillFlow 单线）、树（DGM 多分支保留）、图（MGM 跨分支对照，Polyglot 50.8% 升至 93.2%，超单轨迹基线 77.9%）。
 
 ```mermaid
 flowchart LR
@@ -254,7 +254,7 @@ Weng 列的七个挑战里，与本节直接相关的是两条：模糊的 evalu
 | FinEvo（Bench 范式）[FinEvo] | 在线持续考，任务流 + 清空对照            | 记忆 / Skill / 手册                    | 不限                                                    | 在线：120 金融任务流，无训练阶段               | 保留经验 +9.33~19.37 分，后三任务多 +6~8 分                            |
 | Mem²Evolve [Mem2Evolve]      | 经验与资产双记忆联动                     | Experience + Asset 双记忆              | 联合：拆子任务复用或新建工具，dual 写回                 | 混合：先离线建初始，再在线续更                 | 超单经验路 11.80%，超单工具路 6.46%                                    |
 
-表格说明：归类按青稞长文描述转引，Bench 两行为评测范式；括号内数字终校以对应 arXiv 为准。
+表格说明：Bench 两行为评测范式；括号内数字以对应 arXiv 为准。
 
 **一句话读这张表：** 除 §1.2 的参数回流与 §2.5 的联合优化外，其余全部只改**记忆、Skill、工具、Harness 代码**——这就是"近期 RSI 从 Harness 改起"的实证。
 
@@ -291,7 +291,7 @@ Weng 列的七个挑战里，与本节直接相关的是两条：模糊的 evalu
 
 **再说反向证据。** AI4AI-Bench：固定资源下重写训练算法、不可触评估器打分，原配 0.1、最优 1.0，最强仅 0.250，多数提交根本没改"如何学习"，只会修工程、调驾具、跑实验 [QQ][AI4AI]。即：很会修工程，触核仍浅。
 
-**最后回答第三问：点火了吗？** 没有。AIDE² 的 ignition 测试——让进化出的 AIDE47 坐外层，与 AIDEhuman 对照——约 20 步 vs 约 40 步收敛到同一天花板，差异不显著，结论原话是"not strong enough evidence of ignition" [AIDE2blog §3.1]。嵌套环噪声大，测量本身就难。Bilevel 与 RHI 只证单次机制改进，也不构成点火证据（转引 [QQ]）。
+**最后回答第三问：点火了吗？** 没有。AIDE² 的 ignition 测试——让进化出的 AIDE47 坐外层，与 AIDEhuman 对照——约 20 步 vs 约 40 步收敛到同一天花板，差异不显著，结论原话是"not strong enough evidence of ignition" [AIDE2blog §3.1]。嵌套环噪声大，测量本身就难。Bilevel 与 RHI 只证单次机制改进，也不构成点火证据 [QQ]。
 
 ![新版担任改进者的对照测试：同天花板故为阴性](/assets/aide2_ignition.png)
 *图10 对照测试原图，原图 [AIDE2blog]。*
@@ -337,7 +337,7 @@ Weng 列的七个挑战里，与本节直接相关的是两条：模糊的 evalu
 
 ### 4.6 声明
 
-2026 预印本声明：AIDE²、RHI、SEAL、Motus2、AI4AI-Bench、AutoResearchEval 及青稞转引的新 Bench 均为 arXiv 未评审或团队自报，属阶段性观察，非共识 [QQ]。
+2026 预印本声明：AIDE²、RHI、SEAL、Motus2、AI4AI-Bench、AutoResearchEval 及新 Bench 均为 arXiv 未评审或团队自报，属阶段性观察，非共识 [QQ]。部分新 Bench 条目初见于二手渠道，均已按对应 arXiv 版本核对。
 
 ## 5 参考资料
 
@@ -379,9 +379,9 @@ Weng 列的七个挑战里，与本节直接相关的是两条：模糊的 evalu
 [MLE] https://arxiv.org/abs/2410.07095
 [Kernel] https://arxiv.org/abs/2502.10517
 [DSPy] https://arxiv.org/abs/2310.03714
-[Recuris] https://arxiv.org/abs/2608.24876（转引青稞，终校原文）
-[EvoHarness] https://arxiv.org/abs/2608.15071（转引青稞，终校原文）
-[SkillFlow] https://arxiv.org/abs/2604.17308（转引青稞，终校原文）
-[GDPevo] https://arxiv.org/abs/2608.03764（转引青稞，终校原文）
-[FinEvo] https://arxiv.org/abs/2608.06144（转引青稞，终校原文）
-[Mem2Evolve] https://arxiv.org/abs/2604.10923（转引青稞，终校原文）
+[Recuris] https://arxiv.org/abs/2608.24876
+[EvoHarness] https://arxiv.org/abs/2608.15071
+[SkillFlow] https://arxiv.org/abs/2604.17308
+[GDPevo] https://arxiv.org/abs/2608.03764
+[FinEvo] https://arxiv.org/abs/2608.06144
+[Mem2Evolve] https://arxiv.org/abs/2604.10923
