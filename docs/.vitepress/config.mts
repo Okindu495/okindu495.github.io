@@ -15,6 +15,7 @@ export default withMermaid(
             { text: '智能体笔记', link: '/posts/agent-harness' },
             { text: 'RSI 笔记', link: '/posts/rsi' },
             { text: 'Agent手册', link: '/posts/agent-manual' },
+            { text: 'Agent模式笔记', link: '/posts/agent-patterns' },
           ],
         },
         {
@@ -25,6 +26,7 @@ export default withMermaid(
             { text: '系统设计笔记', link: '/posts/sysdesign' },
             { text: 'Java/Python笔记', link: '/posts/java-python' },
             { text: '基础笔记', link: '/posts/basics' },
+            { text: '算法笔记', link: '/posts/algo' },
           ],
         },
       ],
@@ -36,6 +38,7 @@ export default withMermaid(
             { text: '智能体笔记', link: '/posts/agent-harness' },
             { text: 'RSI 笔记', link: '/posts/rsi' },
             { text: 'Agent手册', link: '/posts/agent-manual' },
+            { text: 'Agent模式笔记', link: '/posts/agent-patterns' },
           ],
         },
         {
@@ -47,11 +50,16 @@ export default withMermaid(
             { text: '系统设计笔记', link: '/posts/sysdesign' },
             { text: 'Java/Python笔记', link: '/posts/java-python' },
             { text: '基础笔记', link: '/posts/basics' },
+            { text: '算法笔记', link: '/posts/algo' },
           ],
         },
       ],
       socialLinks: [{ icon: 'github', link: 'https://github.com/gshkuang' }],
       search: { provider: 'local' },
+      lastUpdated: {
+        text: '最后更新于',
+        formatOptions: { dateStyle: 'short', timeStyle: 'short' },
+      },
       footer: {
         message: '笔记持续更新中',
         copyright: 'Copyright © 2026 gshkuang',

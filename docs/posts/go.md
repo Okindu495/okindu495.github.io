@@ -126,6 +126,15 @@ cat <- struct{}{}
 - **goroutine 泄漏（常问）：** 收发永远等不到、未关闭 channel、未取消 context、timer 泄漏、`WaitGroup` 失配、无退出条件的死循环。排查：pprof goroutine 看阻塞点，每个 G 配退出条件与超时。
 - **自旋占 CPU：** 先定位（忙轮询、锁自旋、`select default` 热循环），再改阻塞等待、加退避与 `Sleep`、拆锁、调 `GOMAXPROCS`。
 - **context 取消传播：** `WithCancel/Timeout/Deadline` 跨 G 传取消与 deadline，用完调 cancel；ctx 放第一个参数，不塞结构体长期持有。
+- **Goroutine 池：** 无界 `go` 会打满下游（连接数/内存），池 = 固定 worker + 有界任务队列 + 拒绝策略（阻塞/丢弃）。适用：DB/网络 IO 并发控制、CPU 密集限并行、容器等资源受限环境。
+
+```go
+type Pool struct {
+    workers  int
+    jobQueue chan func()
+}
+func (p *Pool) Submit(job func()) { p.jobQueue <- job }
+```
 
 ### 2.4 Go 内存模型：并发语义（常问）
 
@@ -189,6 +198,7 @@ flowchart LR
 - **常问：线程 OOM vs goroutine OOM？** 前者整进程被 OOM Killer SIGKILL；后者同样整进程 crash（`out of memory` 不可 recover）。
 - **常见病因：** map 无界增长、slice 拽大底层数组、缓存无淘汰、goroutine 泄漏、日志/队列堆积。
 - **排查链：** pprof（heap/goroutine）→ 指标（RSS、heap inuse）→ 压测复现 → 加上界与淘汰 → 限流分页。
+- **GC 优化口径（参考）：** 某推荐业务用对象池 + 预分配 + 值类型，把单请求分配从 200+ 次压到 50 次内，GC 从 10 秒一次降到 30 秒一次，P99 降约 15%——数字是别人的，方法是通用的：少分配、早复用、用值类型。
 
 ## 4. 工程：框架、可观测与标准库
 

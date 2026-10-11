@@ -9,6 +9,7 @@ title: 文档
 - [智能体笔记](/posts/agent-harness) — 推理 / 上下文 / 工具与约束各是什么，怎么工作
 - [RSI 笔记](/posts/rsi) — 同一骨架如何自我改进：改哪里 / 能不能迁移 / 会不会越改越快
 - [Agent手册](/posts/agent-manual) — AI Agent 系统化知识手册：基础 / 推理 / 记忆 / 工具 / RAG / 多 Agent / 治理 / 工程
+- [Agent模式笔记](/posts/agent-patterns) — 组装 Agent 的套路：工作流 / 单体推理 / 多智能体 / 选型
 
 ## 后端
 
@@ -17,3 +18,4 @@ title: 文档
 - [系统设计笔记](/posts/sysdesign) — 通用解法框架 + 稳定性 / 存储 / 检索弹药 + 完整案例
 - [Java/Python笔记](/posts/java-python) — 双栈对照复习：JVM / JUC / Spring Boot 与 GIL / 并发 / FastAPI
 - [基础笔记](/posts/basics) — 一次请求之旅：网络 + 操作系统
+- [算法笔记](/posts/algo) — 数据结构手撕 + 算法清单 + 撮合引擎案例
