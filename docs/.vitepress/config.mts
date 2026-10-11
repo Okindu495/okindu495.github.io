@@ -17,6 +17,10 @@ export default withMermaid(
             { text: 'Agent手册', link: '/posts/agent-manual' },
           ],
         },
+        {
+          text: '后端',
+          items: [{ text: 'Go笔记', link: '/posts/go' }],
+        },
       ],
       sidebar: [
         {
@@ -27,6 +31,11 @@ export default withMermaid(
             { text: 'RSI 笔记', link: '/posts/rsi' },
             { text: 'Agent手册', link: '/posts/agent-manual' },
           ],
+        },
+        {
+          text: '后端',
+          collapsed: true,
+          items: [{ text: 'Go笔记', link: '/posts/go' }],
         },
       ],
       socialLinks: [{ icon: 'github', link: 'https://github.com/gshkuang' }],
