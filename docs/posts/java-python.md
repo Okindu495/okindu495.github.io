@@ -1,6 +1,6 @@
 ---
 title: Java/Python笔记
-description: 双栈对照复习 — JVM / JUC / Spring 与 GIL / 并发 / FastAPI
+description: 双栈对照复习 — JVM / JUC / Spring Boot 与 GIL / 并发 / FastAPI
 ---
 
 # Java/Python笔记
@@ -58,9 +58,16 @@ flowchart LR
 - **BIO/NIO：** BIO 一连接一线程；NIO 非阻塞 + Selector（Reactor），少量线程扛大量连接；epoll LT 持续通知、ET 边沿通知（读到 `EAGAIN`）。
 - **socket 关闭：** 对端正常关读到 EOF；异常断开可 `Connection reset`。
 
-## 4. Spring：容器、AOP 与事务
+## 4. Spring Boot：容器、AOP 与事务
 
-**一句话：IoC 管对象生死，AOP 管横切逻辑，事务是 AOP 最经典的横切——自调用绕过代理是第一失效源。**
+**一句话：Boot 三板斧——起步依赖聚合、自动装配、外部化配置；IoC 管对象生死，AOP 管横切逻辑，事务是 AOP 最经典的横切——自调用绕过代理是第一失效源。**
+
+### Boot 特性（常问）
+
+- **起步依赖：** 一个 starter 聚合一栈依赖（web/security/data），版本由 Boot 统一管，消灭版本地狱。
+- **外部化配置：** `@ConfigurationProperties` 强类型绑定 + profiles 多环境（dev/test/prod）+ 配置中心覆盖；敏感配置加密。
+- **actuator：** 健康/指标/就绪探针对接编排（K8s 存活就绪探针）；内嵌容器（Tomcat/Netty）端口线程池可配。
+- **优雅关闭：** `server.shutdown=graceful` + 超时，等 in-flight 做完再停（与§2 线程池关闭、Go 的 Shutdown 同思路）。
 
 - **IoC：** Resource 定位 → BeanDefinition 载入 → 注册容器；单例/原型/request-session 作用域；单例依赖多例用 Provider/方法注入。
 - **循环依赖三级缓存（常问）：** singletonObjects（成品）→ earlySingletonObjects（半成品）→ singletonFactories（代理工厂）。解 setter 循环，不解构造器循环。
@@ -102,6 +109,29 @@ flowchart LR
 
 - `AutoConfiguration.imports` 列候选配置类 + `@ConditionalOnClass/MissingBean/Property` 按需生效；用户自定义 Bean 优先（`OnMissingBean` 让路）。
 - 启动链：`@SpringBootApplication` = 配置 + 扫描（同包及子包）+ 自动装配三合一。
+
+### 设计模式在 Boot 里（常问）
+
+- **单例：** Boot Bean 默认单例；手写 DCL 用 `volatile` + 双重检查（防半初始化可见），或静态内部类/枚举。
+- **工厂：** BeanFactory/FactoryBean 封装创建，解耦依赖。
+- **代理：** AOP 的 JDK 动态代理（接口）/ CGLIB（子类），横切逻辑织入。
+- **策略 + 观察者：** 业务扩展点（支付渠道、通知渠道）用策略；事件机制（`ApplicationEvent`）解耦。
+
+```java
+public class Singleton {
+    private static volatile Singleton instance;
+    public static Singleton getInstance() {
+        if (instance == null) {
+            synchronized (Singleton.class) {
+                if (instance == null) {
+                    instance = new Singleton();
+                }
+            }
+        }
+        return instance;
+    }
+}
+```
 
 ## 5. Python 基础：语法、内存与习惯
 
@@ -147,7 +177,7 @@ flowchart LR
 | GC | 三色标记 + 写屏障，GOGC 调 | Java 分代/G1/ZGC；Python 引用计数 + 分代收环 |
 | 内存坑 | 逃逸、slice 分家 | Java OOM 四型排查；Python 环引用 + native 泄漏 |
 | 锁 | Mutex/channel 为主 | Java AQS 全家桶；Python 锁 + 队列 + 少共享 |
-| Web | Gin/net-http/gRPC | Spring MVC/Boot；FastAPI（ASGI） |
+| Web | Gin/net-http/gRPC | Spring Boot Web（内嵌容器）/ FastAPI（ASGI） |
 | 适用 | 高并发 infra、云原生 | Java 企业级；Python 胶水/数据/AI |
 
 ## 附：与他篇的边界

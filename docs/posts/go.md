@@ -127,6 +127,31 @@ cat <- struct{}{}
 - **自旋占 CPU：** 先定位（忙轮询、锁自旋、`select default` 热循环），再改阻塞等待、加退避与 `Sleep`、拆锁、调 `GOMAXPROCS`。
 - **context 取消传播：** `WithCancel/Timeout/Deadline` 跨 G 传取消与 deadline，用完调 cancel；ctx 放第一个参数，不塞结构体长期持有。
 
+### 2.4 Go 内存模型：并发语义（常问）
+
+**一句话：内存模型不管内存放哪（那是§3.1 分配器的事），只管"一个 G 的写，另一个 G 什么时候看得见"——答案：只靠同步原语建立 happens-before，不靠 sleep 和直觉。**
+
+- **程序内顺序：** 单 G 内按代码顺序可见（编译器/CPU 重排对外不可见）。
+- **创建与结束：** `go` 语句之前的操作 → 新 G 可见；G 内全部操作 → 检测到它结束（Done/Wait/Join）后可见。
+- **Channel：** 第 n 个发送 → 第 n 个接收完成可见；`close` → 收到零值（`ok=false`）处可见；有缓冲容量 C 时，第 k 个接收 → 第 k+C 个发送完成可见（这就是"缓冲 C 个" 的语义来源）。
+- **锁：** 第 n 次 `Unlock` → 第 n+1 次 `Lock` 可见；`Once.Do(f)` 中 f 的执行 → 每次返回后可见。
+- **错误示范（常问）：** 轮询标志位不同步，读到什么都不保证——
+
+```go
+var a string
+var done bool
+func setup() { a = "hello, world"; done = true }
+func main() {
+    go setup()
+    for !done { // 错误：无同步！
+    }
+    print(a) // 可能打印空串
+}
+```
+
+- **修法：** done 换 channel 关闭/ mutex/ atomic/ WaitGroup 任一，happens-before 即成立。
+- **与§3.1 的分工：** 本节管"可见性语义"，§3.1 管"变量住栈还是住堆"——一个管对错，一个管快慢。
+
 ## 3. 内存、GC 与逃逸
 
 **一句话：小对象走本地缓存，大对象走全局堆；GC 按"上次存活堆 × (1+GOGC)"触发三色标记；逃逸分析决定变量住栈还是住堆——压住逃逸就是压住 GC。**
