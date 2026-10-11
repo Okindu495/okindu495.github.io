@@ -4,8 +4,8 @@ import { withMermaid } from 'vitepress-plugin-mermaid'
 export default withMermaid(
   defineConfig({
     lang: 'zh-CN',
-    title: 'Origins · Agent 学习笔记',
-    description: 'Model 负责想，Harness 负责给 — LLM Agent 与递归自我改进笔记',
+    title: '学习笔记',
+    description: '学习笔记 — 智能体与递归自我改进',
     themeConfig: {
       nav: [
         { text: '首页', link: '/' },
@@ -14,11 +14,10 @@ export default withMermaid(
       ],
       sidebar: [
         {
-          text: '系列',
+          text: '智能体',
           items: [
-            { text: '导读', link: '/' },
-            { text: '智能体笔记（静态）', link: '/posts/agent-harness' },
-            { text: 'RSI 笔记（动态）', link: '/posts/rsi' },
+            { text: '智能体笔记', link: '/posts/agent-harness' },
+            { text: 'RSI 笔记', link: '/posts/rsi' },
           ],
         },
       ],
