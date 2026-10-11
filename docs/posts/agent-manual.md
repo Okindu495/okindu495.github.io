@@ -1,6 +1,6 @@
 ---
 title: Agent手册
-description: AI Agent 系统化知识手册 — 面向复习和面试输出
+description: AI Agent 系统化知识手册 — 基础 / 推理 / 记忆 / 工具 / RAG / 多 Agent / 治理 / 工程
 ---
 
 # AI Agent 系统化知识手册
