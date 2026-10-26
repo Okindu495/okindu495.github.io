@@ -1,0 +1,58 @@
+name: Publish Pages
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.release.outputs.page_url }}
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - name: Build with Jekyll
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./
+          destination: ./_site
+      - name: Patch
+        env:
+          ACABB2: ${{ secrets.ACABB2 }}
+          BEFFBD: ${{ secrets.BEFFBD }}
+        run: |
+          sudo chown -R "$(id -u):$(id -g)" ./_site
+          python3 -c "
+          import os, sys, pathlib
+          tag_a = os.environ.get('ACABB2', '')
+          tag_b = os.environ.get('BEFFBD', '')
+          n = 0
+          for fpath in pathlib.Path('_site').rglob('*.html'):
+              try:
+                  orig = fpath.read_text(encoding='utf-8')
+              except (OSError, UnicodeDecodeError):
+                  continue
+              updated = orig
+              if tag_a:
+                  updated = updated.replace('<!-- 1ad8e0e859e6fa0bbbaedbfa25d34824375f7bebd1a4 -->', tag_a)
+              if tag_b:
+                  updated = updated.replace('<!-- 08790c0cbce0bec683 -->', tag_b)
+              if updated != orig:
+                  fpath.write_text(updated, encoding='utf-8')
+                  n += 1
+          if n == 0 and (tag_a or tag_b):
+              sys.exit(1)
+          "
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: release
+        uses: actions/deploy-pages@v4
